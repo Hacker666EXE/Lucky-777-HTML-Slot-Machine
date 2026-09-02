@@ -1,0 +1,2990 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+
+<meta name="theme-color" content="#050505">
+
+<title>777 Neon — Slot Machine</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  width:100%;
+  min-height:100%;
+  background:#000;
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
+  overflow-x:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+
+body{
+  display:flex;
+  justify-content:center;
+}
+
+button{
+  font:inherit;
+}
+
+.machine{
+  width:min(1120px,100%);
+  min-height:100dvh;
+  padding:6px;
+}
+
+.cabinet{
+  min-height:calc(100dvh - 12px);
+  position:relative;
+  overflow:hidden;
+
+  border:3px solid #343434;
+  border-radius:22px 22px 12px 12px;
+
+  background:
+    radial-gradient(circle at 50% -10%,#292929 0,#0b0b0b 32%,#020202 72%);
+
+  box-shadow:
+    inset 0 0 0 2px #090909,
+    inset 0 0 55px #000,
+    0 20px 60px #000;
+
+  transition:.15s ease;
+}
+
+/* =========================================================
+   FLASH DO GABINETE
+========================================================= */
+
+.cabinet.win-flash{
+  animation:cabinetFlash .18s linear 8;
+}
+
+@keyframes cabinetFlash{
+  0%{
+    box-shadow:
+      inset 0 0 0 2px #090909,
+      inset 0 0 55px #000,
+      0 0 0 #000;
+  }
+
+  50%{
+    box-shadow:
+      inset 0 0 0 2px #ffe75c,
+      inset 0 0 70px rgba(255,190,0,.45),
+      0 0 35px rgba(255,190,0,.8);
+  }
+
+  100%{
+    box-shadow:
+      inset 0 0 0 2px #090909,
+      inset 0 0 55px #000,
+      0 0 0 #000;
+  }
+}
+
+
+/* =========================================================
+   TOPO
+========================================================= */
+
+.topbar{
+  display:grid;
+  grid-template-columns:125px minmax(0,1fr) 125px;
+  gap:9px;
+  align-items:center;
+  padding:8px;
+}
+
+.display{
+  height:64px;
+
+  border:2px solid #741923;
+  border-radius:10px;
+
+  background:linear-gradient(#180305,#030303);
+
+  box-shadow:
+    inset 0 0 14px #000,
+    0 0 12px rgba(255,0,30,.12);
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+
+.display small{
+  color:#aaa;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+
+.display strong{
+  color:#ff394a;
+  font:900 25px "Courier New",monospace;
+  text-shadow:0 0 8px #f00;
+}
+
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.logo{
+  min-width:0;
+  text-align:center;
+  padding:7px 10px;
+
+  border:2px solid #795c1c;
+  border-radius:14px;
+
+  background:
+    linear-gradient(#19140a,#050505 55%,#171109);
+
+  box-shadow:
+    inset 0 0 25px #000,
+    0 0 15px rgba(255,190,0,.12);
+}
+
+.logo .mini{
+  color:#ffdc58;
+  font-size:11px;
+  font-weight:1000;
+  letter-spacing:2px;
+}
+
+.logo h1{
+  margin:1px 0 0;
+
+  font-size:clamp(30px,5.8vw,62px);
+  line-height:.9;
+
+  font-weight:1000;
+  font-style:italic;
+  letter-spacing:-3px;
+
+  color:#ffe65b;
+
+  text-shadow:
+    2px 2px 0 #681a00,
+    0 0 7px #ff7b00,
+    0 0 18px #ffb000;
+}
+
+.logo .sub{
+  color:#ddd;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:3px;
+  margin-top:5px;
+}
+
+
+/* =========================================================
+   CONFIG
+========================================================= */
+
+.config-btn{
+  width:100%;
+  height:64px;
+
+  border:2px solid #666;
+  border-radius:10px;
+
+  color:#fff;
+  background:linear-gradient(#292929,#080808);
+
+  font-size:10px;
+  font-weight:1000;
+
+  cursor:pointer;
+
+  box-shadow:
+    inset 0 1px 0 #888,
+    0 5px 0 #000;
+}
+
+.config-btn:active{
+  transform:translateY(3px);
+
+  box-shadow:
+    inset 0 1px 0 #555,
+    0 2px 0 #000;
+}
+
+
+/* =========================================================
+   JACKPOT
+========================================================= */
+
+.jackpot{
+  margin:0 9px 8px;
+  min-height:78px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  gap:18px;
+
+  border:3px solid #a77c1d;
+  border-radius:14px;
+
+  background:
+    linear-gradient(#19140a,#030303 55%,#181006);
+
+  box-shadow:
+    inset 0 0 25px #000,
+    0 0 15px rgba(255,190,0,.12);
+
+  transition:.2s ease;
+}
+
+.jackpot.jackpot-pulse{
+  animation:jackpotPulse .3s ease-in-out 6;
+}
+
+@keyframes jackpotPulse{
+  0%,100%{
+    transform:scale(1);
+    filter:brightness(1);
+  }
+
+  50%{
+    transform:scale(1.025);
+    filter:brightness(1.7);
+  }
+}
+
+.jp-title{
+  color:#ffd84b;
+  font-size:clamp(10px,1.8vw,17px);
+  font-weight:1000;
+  letter-spacing:2px;
+  text-align:right;
+}
+
+.jp-value{
+  color:#fff0a0;
+
+  font:900 clamp(28px,5.4vw,58px)
+       "Courier New",monospace;
+
+  letter-spacing:1px;
+
+  text-shadow:
+    0 0 7px #ff8c00,
+    0 0 18px #ffbd00;
+
+  white-space:nowrap;
+}
+
+
+/* =========================================================
+   ÁREA DOS REELS
+========================================================= */
+
+.play-area{
+  margin:0 9px;
+
+  padding:10px 9px 11px;
+
+  border:4px solid #202020;
+  border-radius:16px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #050505,
+      #171717 50%,
+      #050505
+    );
+
+  box-shadow:
+    inset 0 0 0 2px #555,
+    inset 0 0 35px #000;
+}
+
+.reels{
+  position:relative;
+
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+
+  gap:8px;
+
+  width:min(920px,100%);
+  margin:auto;
+}
+
+
+/* =========================================================
+   REEL
+========================================================= */
+
+.reel{
+  position:relative;
+
+  height:clamp(220px,34vw,390px);
+
+  min-width:0;
+  overflow:hidden;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border:5px solid #c59c30;
+  border-radius:9px;
+
+  background:
+    radial-gradient(
+      circle,
+      #181818 0,
+      #050505 55%,
+      #000 100%
+    );
+
+  box-shadow:
+    inset 0 0 0 3px #2c2108,
+    inset 0 0 30px #000,
+    0 0 12px rgba(255,205,60,.13);
+
+  transition:
+    transform .15s ease,
+    filter .15s ease,
+    box-shadow .15s ease;
+}
+
+
+/* brilho interno */
+
+.reel:after{
+  content:"";
+
+  position:absolute;
+  inset:0;
+
+  pointer-events:none;
+  z-index:4;
+
+  opacity:0;
+
+  background:
+    linear-gradient(
+      110deg,
+      transparent 25%,
+      rgba(255,255,255,.15) 50%,
+      transparent 75%
+    );
+
+  transform:translateX(-120%);
+}
+
+.reel.spinning:after{
+  opacity:1;
+  animation:reelShine .3s linear infinite;
+}
+
+@keyframes reelShine{
+  to{
+    transform:translateX(120%);
+  }
+}
+
+
+.reel:before{
+  content:"";
+
+  position:absolute;
+  inset:0;
+
+  z-index:3;
+  pointer-events:none;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(0,0,0,.72),
+      transparent 18%,
+      transparent 82%,
+      rgba(0,0,0,.78)
+    ),
+
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.04),
+      transparent 25%,
+      transparent 75%,
+      rgba(255,255,255,.04)
+    );
+}
+
+
+/* =========================================================
+   SÍMBOLO
+========================================================= */
+
+.symbol{
+  position:relative;
+
+  z-index:2;
+
+  width:100%;
+  height:100%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:18px;
+
+  user-select:none;
+
+  font-size:clamp(72px,12vw,150px);
+
+  line-height:1;
+  text-align:center;
+
+  filter:
+    drop-shadow(0 5px 7px #000);
+
+  transform:translateZ(0);
+
+  transition:
+    transform .12s ease,
+    filter .12s ease;
+}
+
+.reel.spinning .symbol{
+  filter:
+    blur(2px)
+    brightness(1.18)
+    drop-shadow(0 5px 7px #000);
+
+  animation:
+    shake .075s linear infinite alternate;
+}
+
+@keyframes shake{
+  from{
+    transform:
+      translateY(-7px)
+      scale(1.02);
+  }
+
+  to{
+    transform:
+      translateY(7px)
+      scale(1.06);
+  }
+}
+
+
+/* reel parando */
+
+.reel.stop-bounce{
+  animation:stopBounce .28s ease;
+}
+
+@keyframes stopBounce{
+  0%{
+    transform:scale(1);
+  }
+
+  40%{
+    transform:scale(1.035);
+    filter:brightness(1.5);
+  }
+
+  100%{
+    transform:scale(1);
+    filter:brightness(1);
+  }
+}
+
+
+/* vitória */
+
+.reel.winner{
+  border-color:#ffe052;
+
+  box-shadow:
+    inset 0 0 0 3px #765d10,
+    inset 0 0 35px rgba(255,180,0,.45),
+    0 0 25px rgba(255,200,30,.8);
+
+  animation:
+    winnerReel .3s ease-in-out infinite alternate;
+}
+
+@keyframes winnerReel{
+  from{
+    transform:scale(1);
+  }
+
+  to{
+    transform:scale(1.025);
+  }
+}
+
+
+/* =========================================================
+   PAYLINE
+========================================================= */
+
+.payline{
+  position:absolute;
+
+  z-index:10;
+
+  left:-5px;
+  right:-5px;
+
+  top:50%;
+
+  height:3px;
+
+  transform:translateY(-50%);
+
+  background:#ef001c;
+
+  box-shadow:
+    0 0 5px #f00,
+    0 0 13px rgba(255,0,0,.7);
+
+  pointer-events:none;
+}
+
+.payline span{
+  position:absolute;
+
+  left:0;
+  top:50%;
+
+  transform:translateY(-50%);
+
+  padding:4px 7px;
+
+  border-radius:2px;
+
+  background:#e50018;
+  color:#fff;
+
+  font-size:9px;
+  font-weight:1000;
+
+  box-shadow:0 0 6px #f00;
+}
+
+
+/* =========================================================
+   READOUTS
+========================================================= */
+
+.readouts{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+
+  gap:8px;
+
+  width:min(920px,100%);
+
+  margin:9px auto 0;
+}
+
+.readout{
+  text-align:center;
+}
+
+.readout label{
+  display:block;
+
+  margin-bottom:4px;
+
+  color:#aaa;
+
+  font-size:9px;
+  font-weight:1000;
+}
+
+.led{
+  height:51px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border:3px solid #252525;
+  border-radius:8px;
+
+  background:
+    linear-gradient(#170407,#030101);
+
+  color:#ff3345;
+
+  font:900 29px
+       "Courier New",monospace;
+
+  text-shadow:0 0 8px #f00;
+
+  box-shadow:
+    inset 0 0 12px #000;
+}
+
+
+/* =========================================================
+   LOWER
+========================================================= */
+
+.lower{
+  margin:0 9px;
+
+  padding:8px 10px 10px;
+
+  border:2px solid #2d2d2d;
+  border-top:0;
+
+  border-radius:0 0 13px 13px;
+
+  background:
+    linear-gradient(#111,#050505);
+}
+
+.message{
+  min-height:42px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:5px 8px;
+
+  border:2px solid #292929;
+  border-radius:8px;
+
+  background:
+    linear-gradient(#080808,#171717,#080808);
+
+  color:#ffe34d;
+
+  text-align:center;
+
+  font-size:clamp(11px,1.8vw,19px);
+  font-weight:1000;
+
+  text-shadow:
+    0 0 8px rgba(255,180,0,.5);
+
+  transition:.15s ease;
+}
+
+.message.win{
+  color:#fff;
+  border-color:#c99a2c;
+
+  box-shadow:
+    0 0 18px rgba(255,190,0,.35);
+
+  animation:messagePulse .35s ease-in-out infinite alternate;
+}
+
+@keyframes messagePulse{
+  from{
+    filter:brightness(1);
+  }
+
+  to{
+    filter:brightness(1.5);
+  }
+}
+
+
+/* =========================================================
+   CONTROLES
+========================================================= */
+
+.controls{
+  width:min(920px,100%);
+
+  margin:9px auto 0;
+
+  display:grid;
+
+  grid-template-columns:
+    90px
+    90px
+    minmax(150px,1fr)
+    90px
+    90px;
+
+  gap:8px;
+
+  align-items:center;
+}
+
+.btn{
+  min-width:0;
+
+  height:57px;
+
+  border:2px solid #888;
+  border-radius:8px;
+
+  background:
+    linear-gradient(
+      #f5f5f5,
+      #c3c3c3 48%,
+      #595959
+    );
+
+  color:#080808;
+
+  font-size:12px;
+  font-weight:1000;
+
+  cursor:pointer;
+
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 5px 0 #000;
+
+  transition:.08s ease;
+}
+
+.btn:active{
+  transform:translateY(4px);
+
+  box-shadow:
+    inset 0 1px 0 #777,
+    0 1px 0 #000;
+}
+
+.btn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+
+/* botão girar */
+
+.spin{
+  height:70px;
+
+  border-color:#07810d;
+
+  color:#fff;
+
+  font-size:clamp(20px,3vw,29px);
+
+  background:
+    linear-gradient(
+      #4be950,
+      #159d1d 45%,
+      #075b0a
+    );
+
+  text-shadow:
+    0 2px 0 #064b08,
+    0 0 8px #fff;
+
+  box-shadow:
+    inset 0 1px 0 #9dff9d,
+    0 5px 0 #001d00;
+
+  position:relative;
+  overflow:hidden;
+}
+
+.spin:before{
+  content:"";
+
+  position:absolute;
+
+  top:0;
+  left:-100%;
+
+  width:60%;
+  height:100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,.4),
+      transparent
+    );
+
+  transform:skewX(-20deg);
+}
+
+.spin:not(:disabled):hover:before{
+  animation:buttonShine .7s linear;
+}
+
+@keyframes buttonShine{
+  to{
+    left:150%;
+  }
+}
+
+.spin.running{
+  animation:
+    spinButtonPulse .2s ease-in-out infinite alternate;
+}
+
+@keyframes spinButtonPulse{
+  from{
+    filter:brightness(1);
+  }
+
+  to{
+    filter:brightness(1.35);
+  }
+}
+
+
+.betbox{
+  height:57px;
+
+  display:flex;
+  flex-direction:column;
+
+  justify-content:center;
+  align-items:center;
+
+  border:2px solid #444;
+  border-radius:8px;
+
+  background:#050505;
+}
+
+.betbox small{
+  color:#aaa;
+  font-size:8px;
+  font-weight:1000;
+}
+
+.betbox strong{
+  color:#ff303b;
+
+  font:900 23px
+       "Courier New",monospace;
+
+  text-shadow:0 0 7px #f00;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.footer{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+
+  gap:5px;
+
+  padding:9px 10px 7px;
+
+  color:#aaa;
+
+  font-size:9px;
+  font-weight:900;
+
+  text-transform:uppercase;
+
+  text-align:center;
+}
+
+.footer b{
+  color:#36df4d;
+}
+
+
+/* =========================================================
+   OVERLAYS
+========================================================= */
+
+.overlay{
+  position:fixed;
+
+  inset:0;
+
+  z-index:100;
+
+  display:none;
+
+  align-items:center;
+  justify-content:center;
+
+  padding:12px;
+
+  background:rgba(0,0,0,.86);
+
+  backdrop-filter:blur(4px);
+}
+
+.overlay.open{
+  display:flex;
+
+  animation:overlayIn .18s ease;
+}
+
+@keyframes overlayIn{
+  from{
+    opacity:0;
+  }
+
+  to{
+    opacity:1;
+  }
+}
+
+.modal{
+  width:min(700px,100%);
+
+  max-height:94dvh;
+
+  overflow:auto;
+
+  padding:20px;
+
+  border:2px solid #c99a2c;
+  border-radius:15px;
+
+  background:
+    linear-gradient(#151515,#030303);
+
+  box-shadow:
+    0 0 35px #000;
+}
+
+.modal-head{
+  display:flex;
+
+  align-items:center;
+  justify-content:space-between;
+
+  gap:10px;
+
+  color:#ffd94c;
+
+  font-weight:1000;
+}
+
+.close{
+  border:0;
+
+  background:none;
+
+  color:#fff;
+
+  font-size:28px;
+
+  cursor:pointer;
+}
+
+.note{
+  margin:8px 0 14px;
+
+  color:#aaa;
+
+  font-size:10px;
+
+  line-height:1.5;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:11px;
+}
+
+th,td{
+  border:1px solid #333;
+
+  padding:8px 5px;
+
+  text-align:center;
+}
+
+th{
+  color:#ffd94c;
+  background:#111;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:700px){
+
+  .machine{
+    padding:0;
+  }
+
+  .cabinet{
+    min-height:100dvh;
+
+    border-width:2px;
+    border-radius:0;
+  }
+
+  .topbar{
+    grid-template-columns:
+      72px
+      minmax(0,1fr)
+      72px;
+
+    gap:4px;
+
+    padding:5px;
+  }
+
+  .display,
+  .config-btn{
+    height:48px;
+  }
+
+  .display small{
+    font-size:6px;
+  }
+
+  .display strong{
+    font-size:18px;
+  }
+
+  .config-btn{
+    padding:2px;
+    font-size:7px;
+  }
+
+  .logo{
+    padding:4px;
+  }
+
+  .logo .mini{
+    font-size:7px;
+    letter-spacing:1px;
+  }
+
+  .logo h1{
+    font-size:clamp(25px,8vw,39px);
+    letter-spacing:-2px;
+  }
+
+  .logo .sub{
+    font-size:5px;
+    letter-spacing:2px;
+    margin-top:3px;
+  }
+
+  .jackpot{
+    min-height:59px;
+
+    margin:0 5px 5px;
+
+    gap:7px;
+
+    border-width:2px;
+  }
+
+  .jp-title{
+    font-size:7px;
+    letter-spacing:1px;
+  }
+
+  .jp-value{
+    font-size:clamp(21px,7vw,37px);
+  }
+
+  .play-area{
+    margin:0 5px;
+
+    padding:6px 4px 7px;
+
+    border-width:3px;
+  }
+
+  .reels{
+    gap:3px;
+  }
+
+  .reel{
+    height:clamp(185px,56vw,305px);
+    border-width:3px;
+  }
+
+  .symbol{
+    padding:8px;
+
+    font-size:clamp(58px,17vw,100px);
+  }
+
+  .payline{
+    height:3px;
+
+    left:-3px;
+    right:-3px;
+  }
+
+  .payline span{
+    font-size:7px;
+    padding:3px 5px;
+  }
+
+  .readouts{
+    gap:4px;
+    margin-top:6px;
+  }
+
+  .readout label{
+    font-size:6px;
+    margin-bottom:3px;
+  }
+
+  .led{
+    height:40px;
+    border-width:2px;
+    font-size:21px;
+  }
+
+  .lower{
+    margin:0 5px;
+    padding:6px;
+  }
+
+  .message{
+    min-height:35px;
+    font-size:9px;
+  }
+
+  .controls{
+    grid-template-columns:1fr 1fr;
+
+    gap:5px;
+
+    margin-top:6px;
+  }
+
+  .btn{
+    height:45px;
+    font-size:10px;
+  }
+
+  .spin{
+    grid-column:1/-1;
+    grid-row:1;
+
+    height:58px;
+
+    font-size:23px;
+  }
+
+  .betbox{
+    height:45px;
+  }
+
+  .betbox strong{
+    font-size:19px;
+  }
+
+  .footer{
+    padding:6px 4px;
+    font-size:6.5px;
+  }
+}
+
+@media(max-width:360px){
+
+  .topbar{
+    grid-template-columns:
+      62px
+      minmax(0,1fr)
+      62px;
+  }
+
+  .reel{
+    height:174px;
+  }
+
+  .symbol{
+    font-size:58px;
+  }
+
+  .jp-value{
+    font-size:20px;
+  }
+}
+
+@media(max-width:700px) and (max-height:700px){
+
+  .reel{
+    height:165px;
+  }
+
+  .jackpot{
+    min-height:50px;
+  }
+
+  .play-area{
+    padding-top:4px;
+    padding-bottom:5px;
+  }
+
+  .led{
+    height:35px;
+  }
+
+  .lower{
+    padding-top:4px;
+  }
+
+  .message{
+    min-height:30px;
+  }
+
+  .spin{
+    height:50px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!--
+===========================================================
+ÁUDIO
+===========================================================
+-->
+
+<audio
+  id="ambientAudio"
+  src="audio/ambiente.mp3"
+  loop
+  preload="auto">
+</audio>
+
+<audio
+  id="leverAudio"
+  src="audio/girada.mp3"
+  preload="auto">
+</audio>
+
+
+<div class="machine">
+
+<main class="cabinet" id="cabinet">
+
+<!-- =====================================================
+     TOPO
+===================================================== -->
+
+<header class="topbar">
+
+  <div class="display">
+    <small>CRÉDITOS</small>
+    <strong id="creditsTop">284</strong>
+  </div>
+
+  <div class="logo">
+    <div class="mini">
+      CAÇA-NÍQUEL
+    </div>
+
+    <h1>Lucky 777</h1>
+
+    <div class="sub">
+      CLASSIC SLOT MACHINE
+    </div>
+  </div>
+
+  <button
+    class="config-btn"
+    id="configBtn">
+    CONFIGURAÇÕES
+  </button>
+
+</header>
+
+
+<!-- =====================================================
+     JACKPOT
+===================================================== -->
+
+<section class="jackpot" id="jackpotBox">
+
+  <div class="jp-title">
+    JACKPOT PROGRESSIVO
+  </div>
+
+  <div
+    class="jp-value"
+    id="jackpot">
+    R$ 12.464,37
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     JOGO
+===================================================== -->
+
+<section class="play-area">
+
+  <div class="reels">
+
+    <div class="reel" id="reel0">
+      <div
+        class="symbol"
+        id="symbol0">
+        🎰
+      </div>
+    </div>
+
+    <div class="reel" id="reel1">
+      <div
+        class="symbol"
+        id="symbol1">
+        7️⃣
+      </div>
+    </div>
+
+    <div class="reel" id="reel2">
+      <div
+        class="symbol"
+        id="symbol2">
+        💰
+      </div>
+    </div>
+
+    <div class="payline">
+      <span>PAYLINE</span>
+    </div>
+
+  </div>
+
+
+  <!-- ===================================================
+       READOUTS
+  =================================================== -->
+
+  <div class="readouts">
+
+    <div class="readout">
+      <label>ÚLTIMO PRÊMIO</label>
+
+      <div
+        class="led"
+        id="prize">
+        0
+      </div>
+    </div>
+
+
+    <div class="readout">
+      <label>CRÉDITOS</label>
+
+      <div
+        class="led"
+        id="credits">
+        284
+      </div>
+    </div>
+
+
+    <div class="readout">
+      <label>APOSTA</label>
+
+      <div
+        class="led"
+        id="betLed">
+        3
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     CONTROLES
+===================================================== -->
+
+<section class="lower">
+
+  <div
+    class="message"
+    id="message">
+
+    BOA SORTE — LINHA ÚNICA DE PAGAMENTO
+
+  </div>
+
+
+  <div class="controls">
+
+    <button
+      class="btn"
+      id="minus">
+
+      BET −
+
+    </button>
+
+
+    <button
+      class="btn"
+      id="plus">
+
+      BET +
+
+    </button>
+
+
+    <button
+      class="btn spin"
+      id="spin">
+
+      GIRAR
+
+    </button>
+
+
+    <div class="betbox">
+
+      <small>APOSTA</small>
+
+      <strong id="betBox">
+        3
+      </strong>
+
+    </div>
+
+
+    <button
+      class="btn"
+      id="max">
+
+      BET MAX
+
+    </button>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer class="footer">
+
+  <span>
+    CRÉDITOS:
+    <b id="infoCredits">
+      R$ 284,00
+    </b>
+  </span>
+
+  <span>
+    APOSTA:
+    <b id="infoBet">
+      R$ 3,00
+    </b>
+  </span>
+
+  <span>
+    PRÊMIO:
+    <b id="infoPrize">
+      R$ 0,00
+    </b>
+  </span>
+
+</footer>
+
+</main>
+</div>
+
+
+<!-- =====================================================
+     WIN OVERLAY
+===================================================== -->
+
+<div
+  class="overlay"
+  id="winOverlay">
+
+  <div
+    class="modal"
+    style="text-align:center">
+
+    <h2
+      id="winTitle"
+      style="
+        margin:0;
+        color:#ffe44e;
+        font-size:clamp(28px,7vw,52px);
+        text-shadow:0 0 12px #ff9800;
+      ">
+
+      GRANDE GANHO!
+
+    </h2>
+
+    <p
+      id="winMessage"
+      style="font-weight:900">
+    </p>
+
+    <button
+      class="btn"
+      id="continueBtn"
+      style="width:180px">
+
+      CONTINUAR
+
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     CONFIGURAÇÕES
+===================================================== -->
+
+<div
+  class="overlay"
+  id="config">
+
+  <div class="modal">
+
+    <div class="modal-head">
+
+      <span>
+        CONFIGURAÇÕES / TABELA DE GANHOS
+      </span>
+
+      <button
+        class="close"
+        id="configClose">
+
+        ×
+
+      </button>
+
+    </div>
+
+
+    <div class="note">
+
+      Jogo visual/local.
+      Cada crédito vale 1 unidade de aposta.
+      A máquina usa somente a combinação exibida
+      na linha central.
+      O jackpot aumenta conforme os créditos são apostados.
+
+    </div>
+
+
+    <table>
+
+      <thead>
+
+        <tr>
+          <th>COMBINAÇÃO</th>
+          <th>1</th>
+          <th>2</th>
+          <th>3</th>
+        </tr>
+
+      </thead>
+
+
+      <tbody>
+
+        <tr>
+          <td>🎰 • 🎰 • 🎰</td>
+          <td>JACKPOT</td>
+          <td>JACKPOT</td>
+          <td>JACKPOT</td>
+        </tr>
+
+        <tr>
+          <td>7️⃣ • 7️⃣ • 7️⃣</td>
+          <td>100</td>
+          <td>200</td>
+          <td>300</td>
+        </tr>
+
+        <tr>
+          <td>💰 • 💰 • 💰</td>
+          <td>50</td>
+          <td>100</td>
+          <td>150</td>
+        </tr>
+
+        <tr>
+          <td>🪙 • 🪙 • 🪙</td>
+          <td>30</td>
+          <td>60</td>
+          <td>90</td>
+        </tr>
+
+        <tr>
+          <td>🧧 • 🧧 • 🧧</td>
+          <td>20</td>
+          <td>40</td>
+          <td>60</td>
+        </tr>
+
+        <tr>
+          <td>🦁 • 🦁 • 🦁</td>
+          <td>15</td>
+          <td>30</td>
+          <td>45</td>
+        </tr>
+
+        <tr>
+          <td>🍀 • 🍀 • 🍀</td>
+          <td>10</td>
+          <td>20</td>
+          <td>30</td>
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   CONFIGURAÇÃO
+========================================================= */
+
+const SYMBOLS = [
+
+  {
+    id:"slot",
+    emoji:"🎰"
+  },
+
+  {
+    id:"seven",
+    emoji:"7️⃣"
+  },
+
+  {
+    id:"money",
+    emoji:"💰"
+  },
+
+  {
+    id:"coin",
+    emoji:"🪙"
+  },
+
+  {
+    id:"red",
+    emoji:"🧧"
+  },
+
+  {
+    id:"lion",
+    emoji:"🦁"
+  },
+
+  {
+    id:"clover",
+    emoji:"🍀"
+  }
+
+];
+
+
+let credits = 284;
+
+let bet = 3;
+
+let lastPrize = 0;
+
+let jackpot = 12464.37;
+
+let spinning = false;
+
+
+/* =========================================================
+   ELEMENTOS
+========================================================= */
+
+const $ = id =>
+  document.getElementById(id);
+
+
+/* =========================================================
+   ÁUDIO
+========================================================= */
+
+const ambientAudio =
+  $("ambientAudio");
+
+const leverAudio =
+  $("leverAudio");
+
+
+let audioContext = null;
+
+
+/*
+ * O navegador bloqueia áudio automático.
+ * Criamos o AudioContext somente depois
+ * de uma interação do usuário.
+ */
+
+function initAudio(){
+
+  if(!audioContext){
+
+    const AudioContext =
+      window.AudioContext ||
+      window.webkitAudioContext;
+
+    if(AudioContext){
+
+      audioContext =
+        new AudioContext();
+
+    }
+
+  }
+
+  if(
+    audioContext &&
+    audioContext.state === "suspended"
+  ){
+
+    audioContext.resume();
+
+  }
+
+}
+
+
+/* =========================================================
+   SOM SINTÉTICO
+========================================================= */
+
+function beep(
+  frequency = 440,
+  duration = .12,
+  type = "square",
+  volume = .035
+){
+
+  initAudio();
+
+  if(!audioContext) return;
+
+  const osc =
+    audioContext.createOscillator();
+
+  const gain =
+    audioContext.createGain();
+
+  osc.type = type;
+
+  osc.frequency.setValueAtTime(
+    frequency,
+    audioContext.currentTime
+  );
+
+  gain.gain.setValueAtTime(
+    0.0001,
+    audioContext.currentTime
+  );
+
+  gain.gain.exponentialRampToValueAtTime(
+    volume,
+    audioContext.currentTime + .01
+  );
+
+  gain.gain.exponentialRampToValueAtTime(
+    0.0001,
+    audioContext.currentTime + duration
+  );
+
+  osc.connect(gain);
+
+  gain.connect(
+    audioContext.destination
+  );
+
+  osc.start();
+
+  osc.stop(
+    audioContext.currentTime + duration + .02
+  );
+}
+
+
+/* =========================================================
+   SOM DE GIRO
+========================================================= */
+
+function playSpinSound(){
+
+  initAudio();
+
+  if(!audioContext) return;
+
+  const now =
+    audioContext.currentTime;
+
+  const osc =
+    audioContext.createOscillator();
+
+  const gain =
+    audioContext.createGain();
+
+  osc.type = "sawtooth";
+
+  osc.frequency.setValueAtTime(
+    90,
+    now
+  );
+
+  osc.frequency.exponentialRampToValueAtTime(
+    180,
+    now + .7
+  );
+
+  gain.gain.setValueAtTime(
+    0.0001,
+    now
+  );
+
+  gain.gain.exponentialRampToValueAtTime(
+    .045,
+    now + .04
+  );
+
+  gain.gain.exponentialRampToValueAtTime(
+    .0001,
+    now + .75
+  );
+
+  osc.connect(gain);
+
+  gain.connect(
+    audioContext.destination
+  );
+
+  osc.start();
+
+  osc.stop(
+    now + .8
+  );
+}
+
+
+/* =========================================================
+   SOM DE PARADA DO REEL
+========================================================= */
+
+function playReelStopSound(index){
+
+  const frequencies = [
+    250,
+    330,
+    420
+  ];
+
+  beep(
+    frequencies[index] || 300,
+    .10,
+    "square",
+    .045
+  );
+
+}
+
+
+/* =========================================================
+   SOM DE GANHO
+========================================================= */
+
+function playWinSound(){
+
+  initAudio();
+
+  const notes = [
+    523,
+    659,
+    784,
+    1046
+  ];
+
+  notes.forEach(
+    (note,index)=>{
+
+      setTimeout(
+        ()=>{
+          beep(
+            note,
+            .18,
+            "square",
+            .065
+          );
+        },
+        index * 120
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   SOM DE JACKPOT
+========================================================= */
+
+function playJackpotSound(){
+
+  initAudio();
+
+  const notes = [
+    392,
+    523,
+    659,
+    784,
+    1046,
+    1318
+  ];
+
+  notes.forEach(
+    (note,index)=>{
+
+      setTimeout(
+        ()=>{
+
+          beep(
+            note,
+            .28,
+            "sawtooth",
+            .07
+          );
+
+        },
+        index * 130
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   AMBIENTE
+========================================================= */
+
+function startAmbient(){
+
+  initAudio();
+
+  if(!ambientAudio) return;
+
+  ambientAudio.volume = .16;
+
+  const promise =
+    ambientAudio.play();
+
+  if(promise){
+
+    promise.catch(
+      ()=>{}
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   ALAVANCA / GIRO
+========================================================= */
+
+function playLever(){
+
+  initAudio();
+
+  if(!leverAudio) return;
+
+  leverAudio.currentTime = 0;
+
+  leverAudio.volume = .75;
+
+  const promise =
+    leverAudio.play();
+
+  if(promise){
+
+    promise.catch(
+      ()=>{
+
+        beep(
+          110,
+          .16,
+          "square",
+          .055
+        );
+
+      }
+    );
+
+  }
+}
+
+
+/* =========================================================
+   DINHEIRO
+========================================================= */
+
+function money(value){
+
+  return "R$ " +
+    Number(value).toLocaleString(
+      "pt-BR",
+      {
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+      }
+    );
+
+}
+
+
+/* =========================================================
+   SÍMBOLO
+========================================================= */
+
+function getSymbol(id){
+
+  return SYMBOLS.find(
+    s => s.id === id
+  );
+
+}
+
+
+function showReel(index,id){
+
+  const symbol =
+    getSymbol(id);
+
+  $("symbol"+index).textContent =
+    symbol
+      ? symbol.emoji
+      : "❔";
+
+}
+
+
+/* =========================================================
+   SÍMBOLO ALEATÓRIO
+========================================================= */
+
+function randomSymbol(){
+
+  const r =
+    Math.random();
+
+  if(r < .10)
+    return "slot";
+
+  if(r < .22)
+    return "seven";
+
+  if(r < .37)
+    return "money";
+
+  if(r < .52)
+    return "coin";
+
+  if(r < .66)
+    return "red";
+
+  if(r < .82)
+    return "lion";
+
+  return "clover";
+
+}
+
+
+/* =========================================================
+   RESULTADO
+========================================================= */
+
+function weightedResult(){
+
+  const r =
+    Math.random();
+
+  if(r < .018)
+    return [
+      "slot",
+      "slot",
+      "slot"
+    ];
+
+  if(r < .060)
+    return [
+      "seven",
+      "seven",
+      "seven"
+    ];
+
+  if(r < .105)
+    return [
+      "money",
+      "money",
+      "money"
+    ];
+
+  if(r < .145)
+    return [
+      "coin",
+      "coin",
+      "coin"
+    ];
+
+  if(r < .180)
+    return [
+      "red",
+      "red",
+      "red"
+    ];
+
+  if(r < .210)
+    return [
+      "lion",
+      "lion",
+      "lion"
+    ];
+
+  if(r < .235)
+    return [
+      "clover",
+      "clover",
+      "clover"
+    ];
+
+  return [
+    randomSymbol(),
+    randomSymbol(),
+    randomSymbol()
+  ];
+
+}
+
+
+/* =========================================================
+   ATUALIZA INTERFACE
+========================================================= */
+
+function update(){
+
+  $("creditsTop").textContent =
+    Math.floor(credits);
+
+  $("credits").textContent =
+    Math.floor(credits);
+
+  $("betLed").textContent =
+    bet;
+
+  $("betBox").textContent =
+    bet;
+
+  $("prize").textContent =
+    Math.floor(lastPrize);
+
+  $("jackpot").textContent =
+    money(jackpot);
+
+  $("infoCredits").textContent =
+    money(credits);
+
+  $("infoBet").textContent =
+    money(bet);
+
+  $("infoPrize").textContent =
+    money(lastPrize);
+
+}
+
+
+/* =========================================================
+   APOSTA
+========================================================= */
+
+function changeBet(amount){
+
+  if(spinning)
+    return;
+
+  bet =
+    Math.max(
+      1,
+      Math.min(
+        10,
+        bet + amount
+      )
+    );
+
+  if(credits > 0){
+
+    bet =
+      Math.min(
+        bet,
+        Math.floor(credits)
+      );
+
+  }
+
+  update();
+
+}
+
+
+/* =========================================================
+   ANIMAÇÃO DE PARADA
+========================================================= */
+
+function reelStopAnimation(index){
+
+  const reel =
+    $("reel"+index);
+
+  reel.classList.remove(
+    "stop-bounce"
+  );
+
+  void reel.offsetWidth;
+
+  reel.classList.add(
+    "stop-bounce"
+  );
+
+}
+
+
+/* =========================================================
+   GIRAR
+========================================================= */
+
+function spin(){
+
+  if(spinning)
+    return;
+
+  initAudio();
+
+  startAmbient();
+
+  playLever();
+
+  if(credits < bet){
+
+    $("message").textContent =
+      "CRÉDITOS INSUFICIENTES — DIMINUA A APOSTA OU ADICIONE CRÉDITOS";
+
+    beep(
+      120,
+      .25,
+      "sawtooth",
+      .05
+    );
+
+    return;
+  }
+
+
+  spinning = true;
+
+  $("spin").disabled = true;
+
+  $("spin").classList.add(
+    "running"
+  );
+
+
+  /* desconta aposta */
+
+  credits -= bet;
+
+
+  /* jackpot recebe aposta */
+
+  jackpot += bet;
+
+
+  lastPrize = 0;
+
+
+  $("message").textContent =
+    "GIRANDO...";
+
+
+  $("message").classList.remove(
+    "win"
+  );
+
+
+  update();
+
+
+  /* som mecânico */
+
+  playSpinSound();
+
+
+  const result =
+    weightedResult();
+
+
+  const durations = [
+    1100,
+    1450,
+    1800
+  ];
+
+
+  for(let i=0;i<3;i++){
+
+    const reel =
+      $("reel"+i);
+
+    reel.classList.remove(
+      "winner"
+    );
+
+    reel.classList.add(
+      "spinning"
+    );
+
+
+    let ticks = 0;
+
+    const totalTicks =
+      16 + i * 6;
+
+
+    const interval =
+      65 + i * 12;
+
+
+    const timer =
+      setInterval(()=>{
+
+        showReel(
+          i,
+          randomSymbol()
+        );
+
+
+        /*
+         * pequenos cliques
+         * durante a máquina
+         */
+
+        if(
+          ticks % 3 === 0
+        ){
+
+          beep(
+            150 + i * 50,
+            .025,
+            "square",
+            .018
+          );
+
+        }
+
+
+        ticks++;
+
+
+        if(
+          ticks >= totalTicks
+        ){
+
+          clearInterval(timer);
+
+
+          showReel(
+            i,
+            result[i]
+          );
+
+
+          reel.classList.remove(
+            "spinning"
+          );
+
+
+          reelStopAnimation(i);
+
+
+          playReelStopSound(i);
+
+
+          if(i === 2){
+
+            setTimeout(
+              ()=>{
+                finish(result);
+              },
+              150
+            );
+
+          }
+
+        }
+
+      },interval);
+
+  }
+
+}
+
+
+/* =========================================================
+   FINAL DO GIRO
+========================================================= */
+
+function finish(line){
+
+  let prize = 0;
+
+  let title =
+    "SEM PRÊMIO";
+
+  let message =
+    "A LINHA NÃO FORMOU UMA COMBINAÇÃO VENCEDORA.";
+
+
+  /*
+   * remove efeitos anteriores
+   */
+
+  for(let i=0;i<3;i++){
+
+    $("reel"+i)
+      .classList.remove(
+        "winner"
+      );
+
+  }
+
+
+  /* =======================================================
+     JACKPOT
+  ======================================================= */
+
+  if(
+    line.every(
+      x => x === "slot"
+    )
+  ){
+
+    prize =
+      jackpot;
+
+    jackpot = 0;
+
+    title =
+      "JACKPOT!";
+
+    message =
+      "🎰 🎰 🎰 — JACKPOT PROGRESSIVO!";
+
+
+    for(let i=0;i<3;i++){
+
+      $("reel"+i)
+        .classList.add(
+          "winner"
+        );
+
+    }
+
+
+    $("cabinet")
+      .classList.add(
+        "win-flash"
+      );
+
+
+    $("jackpotBox")
+      .classList.add(
+        "jackpot-pulse"
+      );
+
+
+    playJackpotSound();
+
+  }
+
+
+  /* =======================================================
+     777
+  ======================================================= */
+
+  else if(
+    line.every(
+      x => x === "seven"
+    )
+  ){
+
+    prize =
+      bet * 100;
+
+    title =
+      "777!";
+
+    message =
+      "7️⃣ 7️⃣ 7️⃣ — TRÊS SETES!";
+
+    playWinSound();
+
+  }
+
+
+  /* =======================================================
+     MONEY
+  ======================================================= */
+
+  else if(
+    line.every(
+      x => x === "money"
+    )
+  ){
+
+    prize =
+      bet * 50;
+
+    title =
+      "GRANDE GANHO!";
+
+    message =
+      "💰 💰 💰 — COMBINAÇÃO COMPLETA!";
+
+    playWinSound();
+
+  }
+
+
+  /* =======================================================
+     COIN
+  ======================================================= */
+
+  else if(
+    line.every(
+      x => x === "coin"
+    )
+  ){
+
+    prize =
+      bet * 30;
+
+    title =
+      "GANHO!";
+
+    message =
+      "🪙 🪙 🪙 — TRÊS MOEDAS!";
+
+    playWinSound();
+
+  }
+
+
+  /* =======================================================
+     RED
+  ======================================================= */
+
+  else if(
+    line.every(
+      x => x === "red"
+    )
+  ){
+
+    prize =
+      bet * 20;
+
+    title =
+      "GANHO!";
+
+    message =
+      "🧧 🧧 🧧 — TRÊS SÍMBOLOS!";
+
+    playWinSound();
+
+  }
+
+
+  /* =======================================================
+     LION
+  ======================================================= */
+
+  else if(
+    line.every(
+      x => x === "lion"
+    )
+  ){
+
+    prize =
+      bet * 15;
+
+    title =
+      "BOA!";
+
+    message =
+      "🦁 🦁 🦁 — TRÊS LEÕES!";
+
+    playWinSound();
+
+  }
+
+
+  /* =======================================================
+     CLOVER
+  ======================================================= */
+
+  else if(
+    line.every(
+      x => x === "clover"
+    )
+  ){
+
+    prize =
+      bet * 10;
+
+    title =
+      "BOA SORTE!";
+
+    message =
+      "🍀 🍀 🍀 — TRÊS TREVOS!";
+
+    playWinSound();
+
+  }
+
+
+  /* =======================================================
+     PAGA
+  ======================================================= */
+
+  credits += prize;
+
+  lastPrize =
+    prize;
+
+
+  update();
+
+
+  if(prize > 0){
+
+    $("message").textContent =
+      title +
+      " — GANHO " +
+      money(prize);
+
+    $("message").classList.add(
+      "win"
+    );
+
+
+    $("winTitle").textContent =
+      title;
+
+    $("winMessage").textContent =
+      message +
+      " GANHO: " +
+      money(prize);
+
+
+    $("winOverlay")
+      .classList.add(
+        "open"
+      );
+
+
+    /*
+     * Se não for jackpot,
+     * também destaca os reels.
+     */
+
+    if(
+      !line.every(
+        x => x === "slot"
+      )
+    ){
+
+      for(let i=0;i<3;i++){
+
+        $("reel"+i)
+          .classList.add(
+            "winner"
+          );
+
+      }
+
+
+      $("cabinet")
+        .classList.add(
+          "win-flash"
+        );
+
+    }
+
+  }
+
+  else{
+
+    $("message").textContent =
+      "NÃO FOI DESTA VEZ — BOA SORTE NO PRÓXIMO GIRO";
+
+  }
+
+
+  /*
+   * limpa animações depois
+   */
+
+  setTimeout(()=>{
+
+    spinning = false;
+
+    $("spin").disabled =
+      false;
+
+    $("spin").classList.remove(
+      "running"
+    );
+
+    $("cabinet")
+      .classList.remove(
+        "win-flash"
+      );
+
+    $("jackpotBox")
+      .classList.remove(
+        "jackpot-pulse"
+      );
+
+
+    for(let i=0;i<3;i++){
+
+      $("reel"+i)
+        .classList.remove(
+          "winner"
+        );
+
+    }
+
+    update();
+
+  },900);
+
+}
+
+
+/* =========================================================
+   BOTÕES
+========================================================= */
+
+$("spin").onclick =
+  spin;
+
+
+$("minus").onclick =
+  ()=>{
+    changeBet(-1);
+  };
+
+
+$("plus").onclick =
+  ()=>{
+    changeBet(1);
+  };
+
+
+$("max").onclick =
+  ()=>{
+
+    if(spinning)
+      return;
+
+    if(credits > 0){
+
+      bet =
+        Math.min(
+          10,
+          Math.floor(credits)
+        );
+
+    }
+
+    update();
+
+  };
+
+
+/* =========================================================
+   CONFIGURAÇÕES
+========================================================= */
+
+$("configBtn").onclick =
+  ()=>{
+
+    initAudio();
+
+    $("config")
+      .classList.add(
+        "open"
+      );
+
+  };
+
+
+$("configClose").onclick =
+  ()=>{
+
+    $("config")
+      .classList.remove(
+        "open"
+      );
+
+  };
+
+
+$("config").onclick =
+  event => {
+
+    if(
+      event.target ===
+      $("config")
+    ){
+
+      $("config")
+        .classList.remove(
+          "open"
+        );
+
+    }
+
+  };
+
+
+/* =========================================================
+   GANHO
+========================================================= */
+
+$("continueBtn").onclick =
+  ()=>{
+
+    $("winOverlay")
+      .classList.remove(
+        "open"
+      );
+
+  };
+
+
+$("winOverlay").onclick =
+  event => {
+
+    if(
+      event.target ===
+      $("winOverlay")
+    ){
+
+      $("winOverlay")
+        .classList.remove(
+          "open"
+        );
+
+    }
+
+  };
+
+
+/* =========================================================
+   PRIMEIROS SÍMBOLOS
+========================================================= */
+
+showReel(
+  0,
+  "slot"
+);
+
+showReel(
+  1,
+  "seven"
+);
+
+showReel(
+  2,
+  "money"
+);
+
+
+update();
+
+
+/* =========================================================
+   PRIMEIRA INTERAÇÃO
+   Libera o áudio no celular
+========================================================= */
+
+document.addEventListener(
+  "pointerdown",
+  ()=>{
+    initAudio();
+  },
+  {
+    once:true,
+    passive:true
+  }
+);
+
+</script>
+
+</body>
+</html
