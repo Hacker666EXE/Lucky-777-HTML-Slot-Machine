@@ -4,6 +4,10 @@ Base demonstrativa de uma máquina caça-níquel de 3 reels, desenvolvida em HTM
 
 O projeto possui interface responsiva para mobile e PC, sistema de créditos e apostas, jackpot progressivo, combinações de prêmios, animações dos reels e efeitos sonoros.
 
+## 🌐 Demo
+
+https://lucky777bet.netlify.app/
+
 ## 📸 Preview
 
 ![Lucky 777](Images/luck.jpg)
@@ -26,6 +30,7 @@ O projeto possui interface responsiva para mobile e PC, sistema de créditos e a
 - Animações
 - Efeitos sonoros
 - Layout responsivo
+- Compatível com mobile e PC
 
 ## ⚠️ Aviso
 
