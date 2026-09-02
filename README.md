@@ -6,7 +6,7 @@ O projeto possui interface responsiva para mobile e PC, sistema de créditos e a
 
 ## 📸 Preview
 
-![Lucky 777](images/luc1.jpg)
+![Lucky 777](images/luck1.jpg)
 
 ![Lucky 777](images/luck2.jpg)
 
